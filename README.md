@@ -13,7 +13,7 @@ This MCP server bridges Claude Desktop and Sourcegraph, allowing developers to:
 
 ## Features
 
-### 🔍 **Five Powerful Search Tools**
+### 🔍 **Six Powerful Search Tools**
 
 #### `search_code`
 General code search with advanced filtering capabilities.
@@ -62,6 +62,17 @@ Parameters:
 - max_results: Result limit (1-50, default: 20)
 ```
 
+#### `get_file_content`
+Retrieve raw file contents from Sourcegraph repositories.
+```
+Parameters:
+- repository_name: Full repository name (e.g., 'github.com/Canva/canva')
+- file_path: Path to file (e.g., 'src/main.js', 'README.md')
+- revision: Optional git commit/branch/tag (defaults to 'HEAD')
+- limit: Optional max lines to return (1-10,000) for partial reading
+- offset: Optional starting line number (0-based) for partial reading
+```
+
 ### 🎯 **Intelligent Query Processing**
 - **Natural Language**: Converts plain English to Sourcegraph syntax
 - **Auto-Enhancement**: Adds context and result limits automatically
@@ -73,6 +84,13 @@ Parameters:
 - **Environment Variables**: Secure credential management
 - **Connection Validation**: Tests authentication before starting
 - **Permission Inheritance**: Respects user's Sourcegraph permissions
+
+### 🚀 **Advanced File Access**
+- **GraphQL Integration**: Direct API access to Sourcegraph's file system
+- **Partial Content Support**: Read specific sections of large files
+- **Syntax Highlighting**: Automatic language detection and formatting
+- **Revision Support**: Access files from any commit, branch, or tag
+- **Efficient Streaming**: Handle large files with pagination support
 
 ## Quick Start
 
@@ -219,6 +237,20 @@ Use the `list_repositories` tool to discover available repositories:
 **File type filtering:**
 > "Show me all Go files that contain database migration logic"
 
+### File Content Retrieval
+
+**Reading complete files:**
+> "Show me the contents of the main README file"
+> "Get the package.json from the main Canva repository"
+
+**Reading specific file sections:**
+> "Show me lines 100-150 of the main configuration file"
+> "Get the first 50 lines of the server startup script"
+
+**Examining files at specific revisions:**
+> "Show me the authentication config from the v2.1.0 release"
+> "Get the database schema from the staging branch"
+
 ## Configuration
 
 ### Environment Variables
@@ -362,7 +394,7 @@ src/sourcegraph-mcp-server/
 ### Known Limitations
 
 - Maximum 100 results per query (Sourcegraph API limit)
-- No file content retrieval (search results only)
+- File content limited to 10,000 lines per request (use offset for larger files)
 - English language queries work best
 - Requires active internet connection
 
