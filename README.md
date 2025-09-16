@@ -102,63 +102,39 @@ Parameters:
 
 ### Installation
 
-1. **Run the automated setup script:**
-   ```bash
-   /Users/jnelson/development/internal_automation/bin/setup_sourcegraph_mcp.sh
-   ```
+1. **Clone or download this repository**
 
-   This script will:
-   - Validate your Sourcegraph token
-   - Set up the Python environment
-   - Install dependencies
-   - Test the MCP server
-   - Configure Claude Desktop integration
-
-2. **Restart Claude Desktop** to load the new MCP server
-
-3. **Test the integration** by asking Claude:
-   - "Search the codebase for authentication functions"
-   - "Find the definition of validateUser"
-   - "Show me JWT token validation code"
-
-### Manual Setup
-
-If you prefer manual setup:
-
-1. **Create Sourcegraph access token:**
+2. **Create Sourcegraph access token:**
    - Visit: https://canva.sourcegraphcloud.com/user/settings/tokens
    - Create a new token
-   - Save to: `~/.sourcegraph_srccli_token`
+   - Save to: `~/.sourcegraph_token`
 
-2. **Setup Python environment:**
+3. **Install Python dependencies:**
    ```bash
-   cd /Users/jnelson/development/internal_automation/src/sourcegraph-mcp-server
-   python3 -m venv venv
-   source venv/bin/activate
    pip install -r requirements.txt
    ```
 
-3. **Test the server:**
+4. **Test the server:**
    ```bash
-   source /Users/jnelson/development/internal_automation/bin/sourcegraph_env.sh
-   python test_server.py
+   ./run.sh
    ```
 
-4. **Configure Claude Desktop:**
+5. **Configure Claude Desktop:**
    Add to `~/.config/claude-desktop/config.json`:
    ```json
    {
      "mcpServers": {
        "sourcegraph": {
-         "command": "/Users/jnelson/development/internal_automation/src/sourcegraph-mcp-server/run_server.sh",
-         "env": {
-           "SRC_ENDPOINT": "https://canva.sourcegraphcloud.com",
-           "SRC_ACCESS_TOKEN": "your-token-here"
-         }
+         "command": "/path/to/sourcegraph-mcp-server/run.sh"
        }
      }
    }
    ```
+
+6. **Restart Claude Desktop** and test by asking:
+   - "Search the codebase for authentication functions"
+   - "Find the definition of validateUser"  
+   - "Show me the contents of README.md"
 
 ## Repository Pattern Guide
 
@@ -260,7 +236,7 @@ Use the `list_repositories` tool to discover available repositories:
 
 ### File Locations
 
-- **Token Storage**: `~/.sourcegraph_srccli_token`
+- **Token Storage**: `~/.sourcegraph_token` (or `~/.sourcegraph_srccli_token`)
 - **Claude Config**: `~/.config/claude-desktop/config.json`
 - **Server Logs**: Written to stderr (visible in Claude Desktop logs)
 
@@ -269,9 +245,9 @@ Use the `list_repositories` tool to discover available repositories:
 ### Common Issues
 
 #### "Authentication not configured"
-- Ensure `~/.sourcegraph_srccli_token` exists and contains valid token
+- Ensure `~/.sourcegraph_token` exists and contains valid token
 - Verify token has access to canva.sourcegraphcloud.com
-- Check that SRC_ACCESS_TOKEN environment variable is set
+- Token files should contain just the token string, no extra formatting
 
 #### "Connection failed"
 - Test src-cli directly: `src search 'context:global count:1 test'`
@@ -279,9 +255,9 @@ Use the `list_repositories` tool to discover available repositories:
 - Check if token has expired
 
 #### "MCP server not found"
-- Verify Claude Desktop configuration file exists
-- Check that run_server.sh has execute permissions
-- Ensure Python virtual environment is properly set up
+- Verify Claude Desktop configuration file exists and points to correct path
+- Check that `run.sh` has execute permissions (`chmod +x run.sh`)
+- Ensure Python dependencies are installed (`pip install -r requirements.txt`)
 
 #### "No results found"
 - Try broader search terms
@@ -314,15 +290,15 @@ python test_server.py
 
 ### Communication Flow
 ```
-Claude Desktop → MCP Client → [STDIO/JSON-RPC] → MCP Server → src-cli → Sourcegraph API
+Claude Desktop → MCP Client → [STDIO/JSON-RPC] → MCP Server → Sourcegraph API
 ```
 
 ### Key Components
 
-- **main.py**: Core MCP server implementation
-- **run_server.sh**: Production server launcher
-- **test_server.py**: Validation and testing suite
-- **requirements.txt**: Python dependencies
+- **main.py**: Core MCP server implementation (650+ lines)
+- **run.sh**: Server launcher with environment setup
+- **requirements.txt**: Python dependencies (requests)
+- **README.md**: This documentation
 
 ### Protocol Compliance
 

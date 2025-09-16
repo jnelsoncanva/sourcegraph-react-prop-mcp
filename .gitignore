@@ -27,10 +27,22 @@ Thumbs.db
 *.log
 /tmp/
 
-# Test files and temporary scripts
+# Development and test files
 test_*.py
 debug_*.py
 *_test.py
+validate_*.py
+minimal_*.py
+*_original*.py
+
+# Development scripts (keep run.sh, exclude others)
+run_*server*.sh
+run_minimal*.sh
+run_fixed*.sh
+run_mcp*.sh
+claude_*.sh
+update_*.sh
+debug_wrapper.sh
 
 # Config files with secrets
 *_config.json
